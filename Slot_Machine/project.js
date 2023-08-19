@@ -59,11 +59,11 @@ const spin = () => {
     }
   }
 
-  const reels = [[], [], []]
+  const reels = []
 
   for (let i = 0; i < COLS; i++) {
+    reels.push([])
     const reelSymbols = [...symbols]
-    console.log(reelSymbols)
     for (let j = 0; j < ROWS; j++) {
       const randomIndex = Math.floor(Math.random() * reelSymbols.length)
       const selectedSymbol = reelSymbols[randomIndex]
@@ -75,10 +75,38 @@ const spin = () => {
   return reels
 }
 
-const reels = spin()
-console.log(reels)
+const transpose = (reels) => {
+  const rows = []
+
+  for (let i = 0; i < ROWS; i++) {
+    rows.push([])
+    for (let j = 0; j < COLS; j++) {
+      rows[i].push(reels[j][i])
+    }
+  }
+  return rows
+}
+
+const printRows = (rows) => {
+  for (const row of rows) {
+    let rowString = ""
+    for (const [i, symbol] of row.entries()) {
+      rowString += symbol
+      if (i != row.length - 1) {
+        rowString += " | "
+      }
+    }
+    console.log(rowString)
+  }
+}
+
 // let balance = deposit()
 // const numberOfLines = getNumberOfLines()
 // const bet = getBet(balance, numberOfLines)
 // console.log(balance)
 // console.log(numberOfLines)
+const reels = spin()
+console.log(reels)
+const rows = transpose(reels)
+console.log(rows)
+printRows(rows)

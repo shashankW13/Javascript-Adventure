@@ -44,7 +44,7 @@ const getBet = (balance, lines) => {
     const bet = prompt("Enter the bet per line: ")
     const betAmount = parseInt(bet)
 
-    if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance / 3) {
+    if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance / lines) {
       console.log("Invalid bet, try again")
     } else return betAmount
   }
@@ -100,13 +100,50 @@ const printRows = (rows) => {
   }
 }
 
-// let balance = deposit()
-// const numberOfLines = getNumberOfLines()
-// const bet = getBet(balance, numberOfLines)
-// console.log(balance)
-// console.log(numberOfLines)
-const reels = spin()
-console.log(reels)
-const rows = transpose(reels)
-console.log(rows)
-printRows(rows)
+const getWinnings = (rows, lines, bet) => {
+  let winnings = 0
+
+  for (let row = 0; row < lines; row++) {
+    const symbols = rows[row]
+    let allSame = true
+
+    for (const symbol of symbols) {
+      if (symbol != symbols[0]) {
+        allSame = false
+        break
+      }
+    }
+
+    if (allSame) {
+      winnings += bet * SYMBOL_VALUES[symbols[0]]
+    }
+  }
+
+  return winnings
+}
+
+const game = () => {
+  let balance = deposit()
+  while (true) {
+    console.log("Balance : $" + balance)
+    const numberOfLines = getNumberOfLines()
+    const bet = getBet(balance, numberOfLines)
+    console.log("Lines : " + numberOfLines)
+    console.log("Bet per line : $" + bet)
+    balance -= bet * numberOfLines
+    const reels = spin()
+    const rows = transpose(reels)
+    printRows(rows)
+    const winnings = getWinnings(rows, numberOfLines, bet)
+    balance += winnings
+    console.log("Winnings: $" + winnings)
+
+    if (balance <= 0) {
+      console.log("You ran out of money!")
+      break
+    }
+
+    const playAgain = prompt("Do you want to play again (y/n) ?")
+    if (playAgain != "y") break
+  }
+}
